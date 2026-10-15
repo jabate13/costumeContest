@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '../services/supabase';
 import { ensureAnonymousUser } from '../services/auth';
@@ -53,6 +52,8 @@ export default function Vote() {
     const [message, setMessage] = useState<string | null>(null);
 
     const [now, setNow] = useState(Date.now());
+
+    const [previewEntry, setPreviewEntry] = useState<CostumeEntry | null>(null);
 
     const [expandedContest, setExpandedContest] =
         useState<string | null>(null);
@@ -148,6 +149,23 @@ export default function Vote() {
 
         loadVoting();
     }, []);
+
+    useEffect(() => {
+        if (!previewEntry) return;
+
+        function handleEscape(event: KeyboardEvent) {
+            if (event.key === 'Escape') setPreviewEntry(null);
+        }
+
+        document.addEventListener('keydown', handleEscape);
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [previewEntry]);
 
     const votingStart = party?.voting_start
         ? new Date(party.voting_start).getTime()
@@ -366,23 +384,33 @@ export default function Vote() {
                                                             isSelected ? 'selected' : ''
                                                         }`}
                                                     >
-                                                        <h3 className="vote-costume-name">
-                                                            {entry.costume_name}
-                                                        </h3>
-
-                                                        <div className="vote-image-container">
-                                                            {entry.photo_url ? (
-                                                                <img
-                                                                    src={entry.photo_url}
-                                                                    alt={entry.costume_name}
-                                                                    className="vote-photo"
-                                                                />
-                                                            ) : (
-                                                                <div className="vote-no-photo">
-                                                                    ✦ No Photo ✦
-                                                                </div>
-                                                            )}
-                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            className="tarot-entry-card"
+                                                            onClick={() => entry.photo_url && setPreviewEntry(entry)}
+                                                            disabled={!entry.photo_url}
+                                                            aria-label={`View larger photo of ${entry.costume_name}`}
+                                                        >
+                                                            <span className="tarot-entry-photo-area">
+                                                                {entry.photo_url ? (
+                                                                    <img
+                                                                        src={entry.photo_url}
+                                                                        alt=""
+                                                                        className="tarot-entry-photo"
+                                                                        loading="lazy"
+                                                                    />
+                                                                ) : (
+                                                                    <span className="vote-no-photo">✦ No Photo ✦</span>
+                                                                )}
+                                                            </span>
+                                                            <img
+                                                                src="/images/tarot-frame.png"
+                                                                alt=""
+                                                                aria-hidden="true"
+                                                                className="tarot-entry-frame"
+                                                            />
+                                                            <span className="tarot-entry-name">{entry.costume_name}</span>
+                                                        </button>
 
                                                         {isOwnEntry ? (
                                                             <div className="vote-own-entry">
@@ -418,6 +446,36 @@ export default function Vote() {
                 })}
 
             </section>
+
+            {previewEntry?.photo_url && (
+                <div
+                    className="vote-photo-modal"
+                    role="presentation"
+                    onMouseDown={(event) => {
+                        if (event.target === event.currentTarget) setPreviewEntry(null);
+                    }}
+                >
+                    <div
+                        className="vote-photo-dialog"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={`Photo of ${previewEntry.costume_name}`}
+                    >
+                        <button
+                            type="button"
+                            className="vote-photo-close"
+                            onClick={() => setPreviewEntry(null)}
+                            aria-label="Close photo"
+                            autoFocus
+                        >
+                            ×
+                        </button>
+                        <img src={previewEntry.photo_url} alt={previewEntry.costume_name} />
+                        <p>{previewEntry.costume_name}</p>
+                    </div>
+                </div>
+            )}
         </main>
     );
 }
+
