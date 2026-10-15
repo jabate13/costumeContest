@@ -1616,7 +1616,7 @@ body {
 .tarot-entry-card:focus-visible { outline: 3px solid #26394d; outline-offset: 3px; }
 .tarot-entry-photo-area {
     position: absolute;
-    inset: 6% 8% 16%;
+    inset: 6% 8% 6%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1702,4 +1702,19 @@ body {
     .vote-card { padding: 4px; }
     .tarot-entry-name { font-size: clamp(9px, 2.8vw, 13px); }
 }
+
+/* Costume name above tarot frame */
+.vote-card .vote-costume-name {
+    width: 100%;
+    margin: 0 0 8px;
+
+    color: var(--ink);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1rem;
+    font-weight: normal;
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
 

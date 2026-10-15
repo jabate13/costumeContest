@@ -384,6 +384,10 @@ export default function Vote() {
                                                             isSelected ? 'selected' : ''
                                                         }`}
                                                     >
+                                                        <h3 className="vote-costume-name">
+                                                            {entry.costume_name}
+                                                        </h3>
+
                                                         <button
                                                             type="button"
                                                             className="tarot-entry-card"
@@ -400,16 +404,18 @@ export default function Vote() {
                                                                         loading="lazy"
                                                                     />
                                                                 ) : (
-                                                                    <span className="vote-no-photo">✦ No Photo ✦</span>
+                                                                    <span className="vote-no-photo">
+                                                                        ✦ No Photo ✦
+                                                                    </span>
                                                                 )}
                                                             </span>
+
                                                             <img
                                                                 src="/images/tarot-frame.png"
                                                                 alt=""
                                                                 aria-hidden="true"
                                                                 className="tarot-entry-frame"
                                                             />
-                                                            <span className="tarot-entry-name">{entry.costume_name}</span>
                                                         </button>
 
                                                         {isOwnEntry ? (
