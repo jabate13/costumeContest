@@ -1,13 +1,16 @@
 import {
     useEffect,
     useState,
+    useRef,
     type FormEvent,
+    type ChangeEvent,
 } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
 import { supabase } from '../services/supabase';
 import { ensureAnonymousUser } from '../services/auth';
+import { processCostumePhoto } from '../utils/imageProcessing';
 
 
 type EntryType =
@@ -18,6 +21,7 @@ type EntryType =
 
 interface Party {
     id: string;
+    voting_start: string;
 }
 
 
@@ -32,8 +36,51 @@ interface Contest {
 function Register() {
     const navigate = useNavigate();
 
+    const [now, setNow] = useState(Date.now());
+    const [photoFile, setPhotoFile] = useState<File | null>(null);
+    const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+    const [processingPhoto, setProcessingPhoto] = useState(false);
+    const [registrationCreated, setRegistrationCreated] = useState(false);
+    const previewUrlRef = useRef<string | null>(null);
+
+    useEffect(() => {
+        const interval = window.setInterval(() => setNow(Date.now()), 1000);
+        return () => window.clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+        };
+    }, []);
+
+    async function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        event.target.value = '';
+        setProcessingPhoto(true);
+        setError(null);
+
+        try {
+            const processed = await processCostumePhoto(file);
+            const preview = URL.createObjectURL(processed);
+            if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+            previewUrlRef.current = preview;
+            setPhotoFile(processed);
+            setPhotoPreview(preview);
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Unable to process photo.');
+        } finally {
+            setProcessingPhoto(false);
+        }
+    }
+
     const [party, setParty] =
         useState<Party | null>(null);
+
+    const registrationClosed =
+        party !== null &&
+        now >= new Date(party.voting_start).getTime();
 
     const [entryType, setEntryType] =
         useState<EntryType | null>(null);
@@ -74,7 +121,7 @@ function Register() {
                     error: partyError,
                 } = await supabase
                     .from('parties')
-                    .select('id')
+                    .select('id, voting_start')
                     .limit(1)
                     .single();
 
@@ -237,6 +284,17 @@ function Register() {
             return;
         }
 
+        if (!photoFile || processingPhoto) {
+            setError('Please choose a costume photo and wait for it to finish processing.');
+            return;
+        }
+
+        if (Date.now() >= new Date(party.voting_start).getTime()) {
+            setNow(Date.now());
+            setError('Registration has closed. Voting has begun.');
+            return;
+        }
+
         setSubmitting(true);
         setError(null);
 
@@ -246,8 +304,12 @@ function Register() {
              * Ensure the anonymous auth session
              * still exists.
              */
-            await ensureAnonymousUser();
+            const user = await ensureAnonymousUser();
 
+            // The cutoff is also checked when the guest submits.
+            if (Date.now() >= new Date(party.voting_start).getTime()) {
+                throw new Error('Registration has closed. Voting has begun.');
+            }
 
             /*
              * One transactional database call.
@@ -276,9 +338,49 @@ function Register() {
             }
 
 
-            navigate('/dashboard', {
-                replace: true,
+            // Registration exists now. If the photo fails, don't create a duplicate.
+            setRegistrationCreated(true);
+
+            const { data: newEntry, error: lookupError } = await supabase
+                .from('entries')
+                .select('id')
+                .eq('party_id', party.id)
+                .eq('user_id', user.id)
+                .single();
+
+            if (lookupError || !newEntry) {
+                throw new Error('Entry created, but its photo could not be attached. Open Edit Entry from your dashboard.');
+            }
+
+            const extension = photoFile.type === 'image/jpeg'
+                ? 'jpg'
+                : photoFile.type === 'image/png'
+                    ? 'png'
+                    : 'webp';
+
+            const photoPath = `${user.id}/${newEntry.id}-${crypto.randomUUID()}.${extension}`;
+            const bucket = supabase.storage.from('costume-photos');
+            const { error: uploadError } = await bucket.upload(photoPath, photoFile, {
+                contentType: photoFile.type,
+                upsert: false,
             });
+
+            if (uploadError) throw uploadError;
+
+            const { data: publicPhoto } = bucket.getPublicUrl(photoPath);
+            const { error: photoError } = await supabase.rpc('update_entry_photo', {
+                p_entry_id: newEntry.id,
+                p_photo_path: photoPath,
+                p_photo_url: publicPhoto.publicUrl,
+            });
+
+            if (photoError) {
+                // Best-effort cleanup of the uploaded file.
+                await bucket.remove([photoPath]);
+                throw photoError;
+            }
+
+            navigate('/dashboard', { replace: true });
 
         } catch (err) {
             console.error(err);
@@ -306,6 +408,40 @@ function Register() {
         );
     }
 
+
+    if (registrationCreated) {
+        return (
+            <main className="page">
+                <section className="registration-card">
+                    <h1>Costume Registered</h1>
+                    <p>Your entry was created, but we couldn't finish saving its photo.</p>
+                    {error && <div className="form-error">{error}</div>}
+                    <button type="button" className="enter-button"
+                            onClick={() => navigate('/edit-entry')}>
+                        Finish Photo in Edit Entry
+                    </button>
+                </section>
+            </main>
+        );
+    }
+
+    if (registrationClosed) {
+        return (
+            <main className="page">
+                <section className="registration-card">
+                    <div className="registration-header">
+                        <div className="registration-symbol">✦</div>
+                        <h1>Registration Closed</h1>
+                        <p>The contestants are locked in! Registration closed when voting began.</p>
+                    </div>
+                    <button type="button" className="enter-button"
+                            onClick={() => navigate('/vote')}>
+                        View Voting
+                    </button>
+                </section>
+            </main>
+        );
+    }
 
     const individualContests =
         contests.filter(
@@ -437,6 +573,28 @@ function Register() {
                             </div>
 
 
+                            {/* COSTUME PHOTO */}
+                            <div className="form-section">
+                                <label htmlFor="costumePhoto">Costume Photo</label>
+                                <p className="form-help">
+                                    Upload your costume photo. JPEG, PNG, WebP, and iPhone HEIC photos are supported through image conversion.
+                                </p>
+                                {photoPreview && (
+                                    <div className="costume-photo-preview">
+                                        <img src={photoPreview} alt="Costume preview" />
+                                    </div>
+                                )}
+                                <input
+                                    id="costumePhoto"
+                                    type="file"
+                                    accept="image/*,.heic,.heif"
+                                    onChange={handlePhotoChange}
+                                    disabled={submitting || processingPhoto}
+                                    required={!photoFile}
+                                />
+                                {processingPhoto && <p className="form-help">Preparing photo...</p>}
+                            </div>
+
                             {/* INDIVIDUAL CATEGORIES */}
 
                             {entryType ===
@@ -567,6 +725,9 @@ function Register() {
                                 className="enter-button"
                                 disabled={
                                     submitting ||
+                                    processingPhoto ||
+                                    registrationClosed ||
+                                    !photoFile ||
                                     !costumeName.trim() ||
                                     selectedContests.length === 0
                                 }
