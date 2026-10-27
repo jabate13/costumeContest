@@ -1718,3 +1718,121 @@ body {
 }
 
 
+/* Reusable tarot photo frame */
+.costume-photo-frame {
+    position: relative;
+    width: min(100%, 350px);
+    aspect-ratio: 2 / 3;
+    margin: 16px auto;
+}
+
+.costume-photo-frame-image-area {
+    position: absolute;
+    inset: 6% 8% 6%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #292b35;
+}
+
+.costume-photo-frame-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.costume-photo-frame-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.costume-photo-frame-placeholder {
+    color: #f3eee1;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Center the costume photo upload button */
+.costume-upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0 24px;
+}
+
+/* Hide the native file input visually */
+.costume-upload-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+/* Tarot-themed upload button */
+.costume-upload-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 12px 24px;
+    max-width: 100%;
+
+    background: #f5f0e4;
+    border: 1px solid #26394d;
+    color: #26394d;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.costume-upload-button:hover {
+    background: #26394d;
+    color: #f5f0e4;
+}
+
+.costume-upload-input:focus-visible + .costume-upload-button {
+    outline: 3px solid #26394d;
+    outline-offset: 3px;
+}
+
+.costume-upload-button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.costume-upload-symbol {
+    font-size: 12px;
+}
+
+.home-secondary-link {
+    display: block;
+    margin: 16px auto 0;
+    padding: 8px 12px;
+    background: transparent;
+    border: 0;
+    color: var(--ink, #26394d);
+    font-family: Georgia, "Times New Roman", serif;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+}
+.home-secondary-link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+

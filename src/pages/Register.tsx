@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
 import { ensureAnonymousUser } from '../services/auth';
 import { processCostumePhoto } from '../utils/imageProcessing';
+import CostumePhotoFrame from "../components/CostumePhotoFrame.tsx";
 
 
 type EntryType =
@@ -555,7 +556,7 @@ function Register() {
                                     type="text"
                                     placeholder={
                                         entryType === 'individual'
-                                            ? 'e.g. Sexy Gandalf'
+                                            ? 'e.g. Witch of Halloween Town'
                                             : entryType === 'duo'
                                                 ? 'e.g. Mario & Luigi'
                                                 : 'e.g. The Scooby Gang'
@@ -580,18 +581,39 @@ function Register() {
                                     Upload your costume photo. JPEG, PNG, WebP, and iPhone HEIC photos are supported through image conversion.
                                 </p>
                                 {photoPreview && (
-                                    <div className="costume-photo-preview">
-                                        <img src={photoPreview} alt="Costume preview" />
-                                    </div>
+                                    <CostumePhotoFrame
+                                        photoUrl={photoPreview}
+                                        costumeName={costumeName || 'Costume preview'}
+                                    />
                                 )}
-                                <input
-                                    id="costumePhoto"
-                                    type="file"
-                                    accept="image/*,.heic,.heif"
-                                    onChange={handlePhotoChange}
-                                    disabled={submitting || processingPhoto}
-                                    required={!photoFile}
-                                />
+                                <div className="costume-upload-container">
+                                    <input
+                                        id="costumePhoto"
+                                        type="file"
+                                        accept="image/*,.heic,.heif"
+                                        onChange={handlePhotoChange}
+                                        disabled={submitting || processingPhoto}
+                                        required={!photoFile}
+                                        className="costume-upload-input"
+                                    />
+
+                                    <label
+                                        htmlFor="costumePhoto"
+                                        className={`costume-upload-button ${
+                                            submitting || processingPhoto ? 'disabled' : ''
+                                        }`}
+                                    >
+                                        <span className="costume-upload-symbol">✦</span>
+
+                                        {processingPhoto
+                                            ? 'Preparing Photo...'
+                                            : photoFile
+                                                ? 'Change Costume Photo'
+                                                : 'Upload Costume Photo'}
+
+                                        <span className="costume-upload-symbol">✦</span>
+                                    </label>
+                                </div>
                                 {processingPhoto && <p className="form-help">Preparing photo...</p>}
                             </div>
 
