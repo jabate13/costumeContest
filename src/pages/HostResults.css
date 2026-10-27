@@ -1,0 +1,530 @@
+
+.host-results-page {
+    min-height: 100vh;
+    padding: 40px 16px 80px;
+    background: #f5f0e4;
+    color: #26394d;
+}
+
+.host-results-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.host-results-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.host-results-ornament {
+    font-size: 24px;
+    letter-spacing: 12px;
+    margin-bottom: 12px;
+}
+
+.host-results-header h1 {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(32px, 6vw, 54px);
+    font-weight: normal;
+    margin: 0 0 12px;
+}
+
+.host-results-header p {
+    font-family: Georgia, serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.host-results-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 8px 18px;
+    border: 1px solid #26394d;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.host-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #777;
+}
+
+.host-status-dot.active {
+    background: #3e8b5b;
+    box-shadow: 0 0 8px #3e8b5b;
+}
+
+.host-results-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid #26394d;
+    margin-bottom: 44px;
+}
+
+.host-summary-stat {
+    padding: 22px 12px;
+    text-align: center;
+}
+
+.host-summary-stat:not(:last-child) {
+    border-right: 1px solid #26394d;
+}
+
+.host-summary-stat strong {
+    display: block;
+    font-family: Georgia, serif;
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: normal;
+}
+
+.host-summary-stat span {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.host-contest-section {
+    margin-bottom: 48px;
+    padding: 24px;
+    border: 1px solid #26394d;
+}
+
+.host-contest-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    text-align: center;
+}
+
+.host-contest-heading h2 {
+    font-family: Georgia, serif;
+    font-size: clamp(22px, 4vw, 32px);
+    font-weight: normal;
+    margin: 0;
+}
+
+.host-contest-total {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin: 10px 0 26px;
+}
+
+.host-contest-entries {
+    display: grid;
+    gap: 14px;
+}
+
+.host-result-card {
+    display: grid;
+    grid-template-columns: 45px 110px minmax(0, 1fr);
+    align-items: center;
+    gap: 18px;
+    padding: 14px;
+    border: 1px solid #c7bdab;
+    background: #faf7ef;
+}
+
+.host-result-leading {
+    border-color: #8a6d35;
+    background: #f4ecdb;
+}
+
+.host-result-rank {
+    font-family: Georgia, serif;
+    font-size: 24px;
+    text-align: center;
+}
+
+.host-result-photo .costume-photo-frame {
+    width: 100%;
+    margin: 0;
+}
+
+.host-result-details {
+    min-width: 0;
+}
+
+.host-result-details h3 {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    font-weight: normal;
+    overflow-wrap: anywhere;
+    margin: 0 0 14px;
+}
+
+.host-result-count {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.host-result-count strong {
+    font-size: 18px;
+}
+
+.host-result-count strong:last-child {
+    margin-left: auto;
+}
+
+.host-result-progress {
+    height: 9px;
+    background: #ded5c6;
+    overflow: hidden;
+}
+
+.host-result-progress-fill {
+    height: 100%;
+    background: #26394d;
+    transition: width 0.4s ease;
+}
+
+.host-results-footer {
+    text-align: center;
+    font-family: Georgia, serif;
+    font-size: 12px;
+    letter-spacing: 1px;
+    margin-top: 40px;
+}
+
+.host-results-message,
+.host-results-error {
+    padding: 24px;
+    text-align: center;
+}
+
+.host-results-error {
+    border: 1px solid #a53d3d;
+    color: #a53d3d;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .host-contest-section {
+        padding: 14px;
+    }
+
+    .host-result-card {
+        grid-template-columns: 28px 72px minmax(0, 1fr);
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .host-result-rank {
+        font-size: 18px;
+    }
+
+    .host-result-details h3 {
+        font-size: 15px;
+    }
+
+    .host-result-count {
+        flex-wrap: wrap;
+        font-size: 11px;
+    }
+
+    .host-result-count strong {
+        font-size: 14px;
+    }
+}
+
+.host-award-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.host-award-button {
+    padding: 9px 14px;
+    background: transparent;
+    color: #26394d;
+    border: 1px solid #26394d;
+    font-family: Georgia, serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.host-award-button:hover:not(:disabled) {
+    background: #26394d;
+    color: #f5f0e4;
+}
+
+.host-award-button.selected {
+    background: #26394d;
+    color: #f5f0e4;
+    border-color: #26394d;
+}
+
+.host-award-button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+    .host-award-actions {
+        flex-direction: column;
+    }
+}
+
+/* Already-awarded indicator */
+.host-award-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 14px;
+
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.host-award-status span {
+    padding: 3px 9px;
+    border: 1px solid #b6a47d;
+    font-size: 11px;
+    font-weight: normal;
+}
+
+/* Available buttons */
+.host-award-button {
+    background: transparent;
+    color: #26394d;
+    border: 1px solid #26394d;
+}
+
+/* Selected award */
+.host-award-button.selected,
+.host-award-button.selected:disabled {
+    background: #26394d;
+    color: #f5f0e4;
+    border-color: #26394d;
+    opacity: 1;
+    cursor: default;
+}
+
+/* Unavailable because costume already has an award */
+.host-award-button.unavailable,
+.host-award-button.unavailable:disabled {
+    background: #e3dfd7;
+    color: #99938a;
+    border: 1px solid #c9c3b8;
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.host-award-button.unavailable:hover {
+    background: #e3dfd7;
+    color: #99938a;
+}
+
+.host-award-status-label {
+    color: #846b35;
+    font-weight: bold;
+}
+
+.host-award-status-detail {
+    padding: 4px 10px;
+
+    color: #26394d;
+    background: #eee6d6;
+    border: 1px solid #b6a47d;
+
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.host-contest-section {
+    margin-bottom: 14px;
+    padding: 0;
+    border: 1px solid #26394d;
+    background: #faf7ef;
+}
+
+.host-contest-accordion-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    padding: 20px 54px 20px 24px;
+    background: transparent;
+    border: none;
+    color: #26394d;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.host-contest-accordion-header:hover { background: #eee6d6; }
+.host-contest-accordion-header:focus-visible {
+    outline: 2px solid #26394d;
+    outline-offset: -4px;
+}
+.host-accordion-title {
+    flex: 1;
+    min-width: 160px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+}
+.host-accordion-info {
+    font-family: Georgia, serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+.host-accordion-chevron {
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+    transition: transform 0.2s ease;
+}
+.host-accordion-chevron.open { transform: translateY(-50%) rotate(180deg); }
+.host-accordion-content { padding: 20px; border-top: 1px solid #c7bdab; }
+.host-accordion-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.host-accordion-controls button {
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px solid #26394d;
+    color: #26394d;
+    font-family: Georgia, serif;
+    font-size: 12px;
+    cursor: pointer;
+}
+.host-accordion-controls button:hover { background: #26394d; color: #f5f0e4; }
+@media (max-width: 600px) {
+    .host-contest-section { padding: 0; }
+    .host-contest-accordion-header { padding: 16px 40px 16px 14px; }
+    .host-accordion-title { font-size: 18px; min-width: 100%; }
+    .host-accordion-info { font-size: 11px; }
+    .host-accordion-content { padding: 12px; }
+}
+
+/* Awards summary — append to the bottom of your existing HostResults.css */
+.host-awards-summary {
+    margin: 22px 0 26px;
+    border: 1px solid #26394d;
+    background: #faf7ef;
+    color: #26394d;
+}
+
+.host-awards-summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 18px 22px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.host-awards-summary-header:hover { background: #eee6d6; }
+.host-awards-summary-header:focus-visible,
+.host-awards-summary-category-link:focus-visible {
+    outline: 2px solid #26394d;
+    outline-offset: -3px;
+}
+.host-awards-summary-heading { display: flex; flex-direction: column; gap: 5px; }
+.host-awards-summary-heading strong {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 19px;
+    font-weight: bold;
+}
+.host-awards-summary-heading > span {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 12px;
+    color: #777065;
+}
+.host-awards-summary-chevron { font-size: 12px; }
+.host-awards-summary-content { padding: 6px 22px 18px; border-top: 1px solid #c7bdab; }
+.host-awards-summary-category { padding: 13px 0; }
+.host-awards-summary-category + .host-awards-summary-category { border-top: 1px solid #d9d0bf; }
+.host-awards-summary-category-link {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #26394d;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+.host-awards-summary-category-link:hover { color: #846b35; }
+.host-awards-summary-placements { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.host-awards-summary-placement {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding: 12px;
+    background: #eee6d6;
+    border: 1px solid #d4c8b2;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+.host-awards-summary-placement-label { color: #846b35; font-size: 11px; font-weight: bold; letter-spacing: .5px; text-transform: uppercase; }
+.host-awards-summary-unselected { color: #777065; font-style: italic; }
+.host-contest-section { scroll-margin-top: 20px; }
+@media (max-width: 600px) {
+    .host-awards-summary-header { padding: 15px; }
+    .host-awards-summary-content { padding: 5px 15px 14px; }
+    .host-awards-summary-heading strong { font-size: 17px; }
+    .host-awards-summary-placements { gap: 8px; }
+    .host-awards-summary-placement { padding: 10px; font-size: 12px; }
+}
+
+/* Append to HostResults.css */
+.host-award-remove-button {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 7px 12px;
+    border: 1px solid #9d776d;
+    background: transparent;
+    color: #79544b;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.host-award-remove-button:hover:not(:disabled) {
+    background: #79544b;
+    color: #f5f0e4;
+}
+
+.host-award-remove-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+

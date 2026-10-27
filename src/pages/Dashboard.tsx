@@ -9,6 +9,7 @@ import {
 
 import { supabase } from '../services/supabase';
 import { ensureAnonymousUser } from '../services/auth';
+import CostumePhotoFrame from "../components/CostumePhotoFrame.tsx";
 
 
 type EntryType =
@@ -277,14 +278,10 @@ function Dashboard() {
 
 
                 {entry.photo_url && (
-                    <div className="dashboard-photo">
-
-                        <img
-                            src={entry.photo_url}
-                            alt={entry.costume_name}
-                        />
-
-                    </div>
+                    <CostumePhotoFrame
+                        photoUrl={entry.photo_url}
+                        costumeName={entry.costume_name}
+                    />
                 )}
 
 

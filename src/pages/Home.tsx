@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabase';
+import { getPartyPhase } from '../utils/partyPhase';
 
 interface Party {
     id: string;
@@ -353,26 +354,59 @@ function Home() {
     const [party, setParty] = useState<Party | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [hasEntry, setHasEntry] = useState(false);
+    const [now, setNow] = useState(Date.now());
 
     useEffect(() => {
-        async function loadParty() {
-            const { data, error } = await supabase
-                .from('parties')
-                .select('*')
-                .limit(1)
-                .single();
+        let active = true;
 
-            if (error) {
-                setError(error.message);
-                setLoading(false);
-                return;
+        async function refreshHome() {
+            try {
+                const { data: partyData, error: partyError } = await supabase
+                    .from('parties')
+                    .select('id, name, voting_start, voting_end')
+                    .eq('id', '32586d7a-6ade-4bfb-b40a-a0fa8f5e1cc5')
+                    .single();
+
+                if (partyError) throw partyError;
+
+                const { data: userData, error: userError } = await supabase.auth.getUser();
+                // A visitor without an anonymous session has not registered a costume.
+                if (userError && userData.user) throw userError;
+
+                let registered = false;
+                if (userData.user) {
+                    const { data: entry, error: entryError } = await supabase
+                        .from('entries')
+                        .select('id')
+                        .eq('party_id', partyData.id)
+                        .eq('user_id', userData.user.id)
+                        .maybeSingle();
+                    if (entryError) throw entryError;
+                    registered = Boolean(entry);
+                }
+
+                if (!active) return;
+                setParty(partyData);
+                setHasEntry(registered);
+                setError(null);
+            } catch (err) {
+                if (active) {
+                    setError(err instanceof Error ? err.message : 'Unable to load party.');
+                }
+            } finally {
+                if (active) setLoading(false);
             }
-
-            setParty(data);
-            setLoading(false);
         }
 
-        loadParty();
+        void refreshHome();
+        const refreshInterval = window.setInterval(() => void refreshHome(), 15000);
+        const clockInterval = window.setInterval(() => setNow(Date.now()), 1000);
+        return () => {
+            active = false;
+            window.clearInterval(refreshInterval);
+            window.clearInterval(clockInterval);
+        };
     }, []);
 
     if (loading) {
@@ -395,6 +429,16 @@ function Home() {
             </main>
         );
     }
+
+    const phase = getPartyPhase(party, now);
+
+    const mainAction = phase === 'registration'
+        ? { label: hasEntry ? 'VIEW MY COSTUME' : 'REGISTER YOUR COSTUME', path: hasEntry ? '/dashboard' : '/register' }
+        : phase === 'voting'
+            ? { label: 'VOTE NOW', path: '/vote' }
+            : hasEntry
+                ? { label: 'VIEW MY COSTUME', path: '/dashboard' }
+                : null;
 
     const votingStart = party.voting_start
         ? new Date(party.voting_start).toLocaleTimeString([], {
@@ -435,24 +479,52 @@ function Home() {
                     </p>
 
                     <p className="card-description">
-                        Gather beneath the moon and reveal
-                        what you've conjured for the night.
+                        {phase === 'registration'
+                            ? "Gather beneath the moon and reveal what you've conjured for the night."
+                            : phase === 'voting'
+                                ? 'The hour has come. Cast your votes for the costumes you love.'
+                                : 'The votes have been cast. Thank you for celebrating with us!'}
                     </p>
 
-                    {/* Enter button */}
-                    <button
-                        className="tarot-button"
-                        onClick={() => navigate('/register')}
-                    >
-                        <span>✦</span>
-                        ENTER THE PARTY
-                        <span>✦</span>
-                    </button>
+                    {mainAction && (
+                        <button
+                            className="tarot-button"
+                            onClick={() => navigate(mainAction.path)}
+                        >
+                            <span>✦</span>
+                            {mainAction.label}
+                            <span>✦</span>
+                        </button>
+                    )}
 
-                    {votingStart && (
+                    {phase === 'registration' && hasEntry && (
+                        <button
+                            type="button"
+                            className="home-secondary-link"
+                            onClick={() => navigate('/edit-entry')}
+                        >
+                            Edit My Costume
+                        </button>
+                    )}
+                    {phase === 'voting' && hasEntry && (
+                        <button
+                            type="button"
+                            className="home-secondary-link"
+                            onClick={() => navigate('/dashboard')}
+                        >
+                            View My Costume
+                        </button>
+                    )}
+
+                    {phase === 'registration' && votingStart && (
                         <div className="voting-info">
                             <span>VOTING OPENS</span>
                             <strong>{votingStart}</strong>
+                        </div>
+                    )}
+                    {phase === 'finished' && (
+                        <div className="voting-info">
+                            <strong>✦ THANK YOU FOR PARTICIPATING ✦</strong>
                         </div>
                     )}
 
@@ -470,3 +542,4 @@ function Home() {
 }
 
 export default Home;
+

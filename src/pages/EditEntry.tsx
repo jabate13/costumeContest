@@ -11,6 +11,7 @@ import { supabase } from '../services/supabase';
 import { ensureAnonymousUser } from '../services/auth';
 import { processCostumePhoto } from '../utils/imageProcessing';
 import type { ChangeEvent } from 'react';
+import CostumePhotoFrame from "../components/CostumePhotoFrame.tsx";
 
 type EntryType =
     | 'individual'
@@ -520,33 +521,6 @@ function EditEntry() {
 
                 <form onSubmit={handleSubmit}>
 
-                    {/* ENTRY TYPE */}
-
-                    <div className="form-section">
-
-                        <label>
-                            Entry Type
-                        </label>
-
-                        <div className="automatic-contest">
-
-                            <span>
-                              ✦
-                            </span>
-
-                            <strong>
-                                {entryTypeLabel}
-                            </strong>
-
-                            <small>
-                                Entry type cannot be changed
-                                after registration.
-                            </small>
-
-                        </div>
-
-                    </div>
-
                     {/* COSTUME PHOTO */}
 
                     <div className="form-section">
@@ -560,21 +534,36 @@ function EditEntry() {
                         </p>
 
                         {photoPreview && (
-                            <div className="costume-photo-preview">
-                                <img
-                                    src={photoPreview}
-                                    alt="Costume preview"
-                                />
-                            </div>
+                            <CostumePhotoFrame
+                                photoUrl={photoPreview}
+                                costumeName={costumeName || 'Costume preview'}
+                            />
                         )}
 
-                        <input
-                            id="costumePhoto"
-                            type="file"
-                            accept="image/*,.heic,.heif"
-                            onChange={handlePhotoChange}
-                            disabled={saving || processingPhoto}
-                        />
+                        <div className="costume-upload-container">
+                            <input
+                                id="costumePhoto"
+                                type="file"
+                                accept="image/*,.heic,.heif"
+                                onChange={handlePhotoChange}
+                                disabled={saving || processingPhoto}
+                                className="costume-upload-input"
+                            />
+
+                            <label
+                                htmlFor="costumePhoto"
+                                className={`costume-upload-button ${
+                                    saving || processingPhoto ? 'disabled' : ''
+                                }`}
+                            >
+                                <span className="costume-upload-symbol">✦</span>
+                                {processingPhoto
+                                    ? 'Preparing Photo...'
+                                    : 'Change Costume Photo'}
+                                <span className="costume-upload-symbol">✦</span>
+                            </label>
+                        </div>
+
                     </div>
 
                     {/* COSTUME NAME */}
